@@ -21,6 +21,8 @@ const stream = require.requireActual('stream');
 
 const noop = () => {};
 
+const isNode6 = process.versions.node.startsWith('6');
+
 function asyncCallback(cb) {
   return function() {
     setImmediate(() => cb.apply(this, arguments));
@@ -347,9 +349,11 @@ fs.createWriteStream.mockImplementation(filePath => {
   const writeStream = new stream.Writable({
     write(chunk, encoding, callback) {
       this.__chunks.push(chunk);
-      callback();
-    },
-    final(callback) {
+      /**
+       * We can't use `final` as that has been added to Node 8.x.
+       * For backwards compatibility and minimal code paths,
+       * we update the content of a file immediately
+       */
       node[path.basename(filePath)] = this.__chunks.join('');
       callback();
     },
