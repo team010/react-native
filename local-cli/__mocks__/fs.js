@@ -21,8 +21,6 @@ const stream = require.requireActual('stream');
 
 const noop = () => {};
 
-const isNode6 = process.versions.node.startsWith('6');
-
 function asyncCallback(cb) {
   return function() {
     setImmediate(() => cb.apply(this, arguments));
